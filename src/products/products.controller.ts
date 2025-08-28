@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -10,7 +9,6 @@ import {
   Patch,
   Post,
   Query,
-  UseFilters,
 } from '@nestjs/common';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { PRODUCTS_SERVICE } from 'src/config';
@@ -27,10 +25,9 @@ export class ProductsController {
   @Post()
   async createProduct(@Body() createProductDto: CreateProductDto) {
     try {
-       const productCreated = await firstValueFrom(this.productsClient.send(
-        { cmd: 'create_product' },
-        createProductDto,
-      ));
+      const productCreated = await firstValueFrom(
+        this.productsClient.send({ cmd: 'create_product' }, createProductDto),
+      );
       return productCreated;
     } catch (error) {
       throw new RpcException(error);
@@ -58,7 +55,10 @@ export class ProductsController {
   }
 
   @Patch(':id')
-  async updateProduct(@Param('id',ParseIntPipe) id: number, @Body() body: UpdateProductDto) {
+  async updateProduct(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: UpdateProductDto,
+  ) {
     try {
       body.id = id;
       const productUpdated = await firstValueFrom(
